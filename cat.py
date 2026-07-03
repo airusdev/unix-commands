@@ -1,5 +1,6 @@
 import argparse
 import sys
+from typing import TextIO
 
 def sys_write(message: str) -> None:
     """Shortens sys.stdout.write and flushes with a newline"""
@@ -8,11 +9,40 @@ def sys_write(message: str) -> None:
 def sys_error(message: str) -> None:
     sys.stderr.write(message + "\n")
 
-def number_output_lines() -> None:
-    return None
+def file_only(f: TextIO) -> None:
+    for line in f:
+        line = line.strip()
+        sys_write(line)
 
-def number_blank_lines() -> None:
-    return None
+def number_output_lines(f: TextIO) -> None:
+    count = 1
+    for line in f:
+        line = line.strip()
+        sys_write(f"{count} {line}")
+        count += 1
+
+def number_non_blank_lines(f: TextIO) -> None:
+    count = 1
+    for line in f:
+        line = line.strip()
+        if line != "":
+            sys_write(f"{count} {line}")
+            count += 1
+        else:
+            sys_write(line)
+
+def setup_parser() -> None:
+    """Sets up argparse and the arguments"""
+    global parser
+    global args
+
+    parser = argparse.ArgumentParser()
+    
+    parser.add_argument("file", help="file you wish to work with", nargs="*")
+    parser.add_argument("-n", "--number_output_lines", help="number every output line", action="store_true")
+    parser.add_argument("-b", "--number_non_blank_lines", help="number every non-blank lines", action="store_true")
+
+    args = parser.parse_args()
 
 def file_not_detected() -> None:
     """When file is not inputted, acquire datafrom stdin instead"""
@@ -30,24 +60,17 @@ def file_detected() -> None:
     for file in args.file:
         try:
             with open(f"./sample_files/{file}", 'r', encoding="utf-8") as f:
-                for line in f:
-                    line = line.strip()
-                    sys_write(line)
+                if args.number_output_lines:
+                    number_output_lines(f)
+                        
+                elif args.number_non_blank_lines:
+                    number_non_blank_lines(f)
+                
+                else:
+                    file_only()
+                    
         except FileNotFoundError:
             sys_error(f"[ERROR DETECTED] File: {file} is not found")
-
-def setup_parser() -> None:
-    """Sets up argparse and the arguments"""
-    global parser
-    global args
-
-    parser = argparse.ArgumentParser()
-    
-    parser.add_argument("file", help="file you wish to work with", nargs="*")
-    parser.add_argument("-n", "--number_output_lines", help="number every output line", action="store_true")
-    parser.add_argument("-b", "--number_non_blank_lines", help="number every non-blank lines", action="store_true")
-
-    args = parser.parse_args()
 
 def cat() -> None: # needs a better name for this
     if not args.file:
