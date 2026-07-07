@@ -1,6 +1,7 @@
+from typing import TextIO
 import argparse
 import sys
-from typing import TextIO
+import glob
 
 def sys_write(message: str) -> None:
     """Shortens sys.stdout.write and flushes with a newline"""
@@ -35,7 +36,7 @@ def output_content(file: TextIO) -> str | None:
 
         elif args.number_non_blank_lines:
             if line == "":
-                sys_write(f"{count} {line} NON BLANK LINES DETECTED")
+                sys_write(f"{count} {line}")
                 count += 1
             else:
                 sys_write(line)
@@ -54,15 +55,21 @@ def file_not_detected() -> None:
 
 def file_detected() -> None:
     "File/s are detected, output the data to the terminal"
-    sys_write("file/s detected" + "\n")
-
     for file in args.file:
-        try:
-            with open(f"./sample_files/{file}", 'r', encoding="utf-8") as f:
-                output_content(f)
+        formatted = file.split(".")[0]
+        found_matches = glob.glob(f"./sample_files/{formatted}.*")
 
-        except FileNotFoundError:
-            sys_error(f"[ERROR DETECTED] File: {file} is not found")
+        if not found_matches:
+            sys_error(f"[ERROR DETECTED] File: {file} is not found!")
+            break
+        
+        for match in found_matches:
+            try:
+                with open(match, 'r', encoding="utf-8") as f:
+                    output_content(f)
+
+            except FileNotFoundError:
+                sys_error(f"[ERROR DETECTED] File: {file} is not found")
 
 def cat() -> None:
     """Calls the appropriate functions to output content to the terminal"""
