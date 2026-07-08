@@ -14,7 +14,7 @@ def setup_parser() -> None:
     """Sets up argparse and the arguments"""
     global parser
     global args
-    
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument("file", help="file you wish to work with", nargs="*")
@@ -22,14 +22,14 @@ def setup_parser() -> None:
     parser.add_argument("-b", "--number_non_blank_lines", help="number every non-blank lines", action="store_true")
 
     args = parser.parse_args()
-    
+
 def output_content(file: TextIO) -> str | None:
     """Outputs the content based on the optional argument picked"""
     count = 1
-    
+
     for line in file:
-        line =  line.strip()
-        
+        line = line.strip()
+
         if args.number_output_lines:
             sys_write(f"{count} {line}")
             count += 1
@@ -60,16 +60,12 @@ def file_detected() -> None:
         found_matches = glob.glob(f"./sample_files/{formatted}.*")
 
         if not found_matches:
-            sys_error(f"[ERROR DETECTED] File: {file} is not found!")
-            break
-        
-        for match in found_matches:
-            try:
-                with open(match, 'r', encoding="utf-8") as f:
-                    output_content(f)
+            sys_error(f"[ERROR DETECTED] File: '{file}' is not found" + "\n")
+            continue
 
-            except FileNotFoundError:
-                sys_error(f"[ERROR DETECTED] File: {file} is not found")
+        for match in found_matches:
+            with open(match, 'r', encoding="utf-8") as f:
+                output_content(f)
 
 def cat() -> None:
     """Calls the appropriate functions to output content to the terminal"""
@@ -77,7 +73,6 @@ def cat() -> None:
         file_not_detected()
     else:
         file_detected()
-
 
 
 def main() -> None:
