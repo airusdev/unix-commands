@@ -26,11 +26,19 @@ def setup_argparse() -> None:
     args = parser.parse_args()
 
 def output_content(file: TextIO) -> None:
+    count = 1 
+    
     for line in file:
         line = line.strip()
+        to_print = line
 
         if args.pattern in line:
-            sys_write(line)
+            if args.number_output_lines:
+                to_print = f"{count} {line}"
+                count += 1
+            
+            sys_write(to_print)
+        
 
 def file_pattern_detected() -> None:
     for file in args.file:
