@@ -44,7 +44,7 @@ def file_detected(file: TextIO) -> None:
         if args.number_output_lines:
             to_print = f"{count} {line}"
         
-        if (args.invert_match) and not (pattern in line):
+        if not args.invert_match and pattern in line:
             if args.count_of_matches:
                 count += 1
                 continue
@@ -72,8 +72,10 @@ def file_and_pattern_detected() -> None:
 def file_not_detected() -> None:
     """When file is not detected, acquire from stdin"""
     sys_write("Acquiring from stdin . . .") 
+    count = 1
     
     for line in sys.stdin:
+        line = line.strip()
         pattern = args.pattern
         to_print = line
         
@@ -84,7 +86,7 @@ def file_not_detected() -> None:
         if args.number_output_lines:
             to_print = f"{count} {line}"
         
-        if (args.invert_match) and not (pattern in line):
+        if not args.invert_match and pattern in line:
             if args.count_of_matches:
                 count += 1
                 continue
@@ -102,6 +104,8 @@ def validate_pattern_file_existence() -> None:
     else:
         if not args.pattern:
             sys_error("[ERROR DETECTED] No pattern inputted")
+            return
+        
         if not args.file:
             sys_error("[ERROR DETECTED] No file inputted")
             file_not_detected()
