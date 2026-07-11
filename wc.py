@@ -11,7 +11,7 @@ def sys_error(message: str) -> None:
     """Shortens sys.stderr and adds a newline"""
     sys.stderr.write(message + "\n")
 
-def setup_argparse -> None:
+def setup_argparse() -> None:
     """Setups argparse arguments"""
     global args
     parser = argparse.ArgumentParser()
@@ -29,8 +29,8 @@ def setup_argparse -> None:
 def setup_variables() -> None:
     """Setups the lines, word, byte variables for output"""
     global lines
-    global word
-    global byte
+    global words
+    global bytes_
 
     lines = 0
     words = 0
@@ -51,8 +51,11 @@ def count_bytes(line: str) -> int:
 
     return bytes_count
 
-def count_in_file(f) -> None:   
+def count_occurrences_in_file(file: TextIO) -> None:   
     """Acquires the total number of occurrences of lines, word, and bytes"""
+    global lines
+    global words
+    global bytes_ 
     
     for line in file:
         line = line.strip()
@@ -81,7 +84,7 @@ def file_not_exists() -> None:
     """If file does not exist, acquire from stdin"""
     sys_write("[NO FILE DETECTED] Acquiring from stdin . . .")
 
-    for line sys.stdin:
+    for line in sys.stdin:
         line = line.strip()
         sys_write(line)
         # code here
