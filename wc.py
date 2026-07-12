@@ -26,16 +26,6 @@ def setup_argparse() -> None:
 
     args = parser.parse_args()
 
-def setup_variables() -> None:
-    """Setups the lines, word, byte variables for output"""
-    global lines
-    global words
-    global bytes_
-
-    lines = 0
-    words = 0
-    bytes_ = 0
-
 def output_results() -> None:
     global lines
     global words
