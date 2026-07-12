@@ -26,7 +26,16 @@ def setup_argparse() -> None:
 
     args = parser.parse_args()
 
-def output_results() -> None:
+def setup_variables() -> None:
+    global lines
+    global words
+    global bytes_
+
+    lines = 0
+    words = 0
+    bytes_ = 0
+
+def output_results(file: TextIO) -> None:
     global lines
     global words
     global bytes_
@@ -45,6 +54,8 @@ def output_results() -> None:
         to_output = default
 
     to_output = " ".join(map(str, to_output))
+    to_output += f" {file}"
+
     sys_write(to_output)
 
 def count_line(line: str) -> int:
@@ -79,7 +90,7 @@ def count_occurrences_in_file(file: TextIO) -> None:
         words += count_words(line)
         bytes_ += count_bytes(line)
 
-    output_results()
+    output_results(file)
 
 def look_for_file_matches() -> None:
     """Looks for file matches in the files directory"""
@@ -110,7 +121,7 @@ def file_not_exists() -> None:
 
         sys_write(f"{lines} {words} {bytes_}")
 
-def file_existence() -> None:
+def check_file_existence() -> None:
     """Validates if file from input exists"""
     if args.file:
         look_for_file_matches()
@@ -120,7 +131,7 @@ def file_existence() -> None:
     return
 
 def wc() -> None:
-    file_existence()
+    check_file_existence()
 
 
 def main() -> None:
