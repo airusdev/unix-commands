@@ -27,6 +27,7 @@ def setup_argparse() -> None:
     args = parser.parse_args()
 
 def setup_variables() -> None:
+    """Sets up the variables for the total occurrences of files"""
     global lines
     global words
     global bytes_
@@ -35,7 +36,41 @@ def setup_variables() -> None:
     words = 0
     bytes_ = 0
 
-def output_results(file: TextIO) -> None:
+def setup_total() -> None:
+    """Sets up the variables for the total occurrences from each files"""
+    global total_lines
+    global total_words
+    global total_bytes_
+
+    total_lines = 0
+    total_words = 0
+    total_bytes_ = 0
+
+def output_total() -> str: # what if it only does
+    """Outputs the total lines, words, and bytes of all the files searched"""
+    global total_lines
+    global total_words
+    global total_bytes_
+
+    to_output = []
+    default = f"{total_lines} {total_words} {total_bytes_}"
+
+    if args.lines_only:
+        to_output.append(total_lines)
+    if args.words_only:
+        to_output.append(total_words)
+    if args.bytes_only:
+        to_output.append(total_bytes_)
+
+    if not to_output:
+        to_output = default
+
+    to_output = "".join(map(str, to_output))
+    to_output += f" total"
+    sys_write(to_output)
+
+def output_results(file: TextIO, is_total: bool) -> None:
+    """Outputs the total lines, words, and bytes of a file"""
     global lines
     global words
     global bytes_
@@ -53,8 +88,8 @@ def output_results(file: TextIO) -> None:
     if not to_output:
         to_output = default
 
-    to_output = " ".join(map(str, to_output))
-    to_output += f" {file}"
+    to_output = "".join(map(str, to_output))
+    to_output += f" {file.name.split("/")[-1]}"
 
     sys_write(to_output)
 
@@ -81,6 +116,11 @@ def count_bytes(line: str) -> int:
 
 def count_occurrences_in_file(file: TextIO) -> None:
     """Acquires the total number of occurrences of lines, word, and bytes"""
+    if len(args.file) > 1:
+        global total_lines
+        global total_words
+        global total_bytes_
+
     global lines
     global words
     global bytes_
@@ -89,6 +129,11 @@ def count_occurrences_in_file(file: TextIO) -> None:
         lines += count_line(line)
         words += count_words(line)
         bytes_ += count_bytes(line)
+
+        if len(args.file) > 1:
+            total_lines += lines
+            total_words += words
+            total_bytes_ += bytes_
 
     output_results(file)
 
@@ -105,6 +150,9 @@ def look_for_file_matches() -> None:
         for match in found_matches:
             with open(match, 'r', encoding="utf-8") as f:
                 count_occurrences_in_file(f)
+
+    if len(args.file) > 1:
+        output_total()
 
 def file_not_exists() -> None:
     """If file does not exist, acquire from stdin"""
@@ -124,6 +172,8 @@ def file_not_exists() -> None:
 def check_file_existence() -> None:
     """Validates if file from input exists"""
     if args.file:
+        if len(args.file) > 1:
+            setup_total()
         look_for_file_matches()
     else:
         file_not_exists()
