@@ -40,57 +40,31 @@ def setup_total() -> None:
     """Sets up the variables for the total occurrences from each files"""
     global total_lines
     global total_words
-    global total_bytes_
+    global total_bytes
 
     total_lines = 0
     total_words = 0
-    total_bytes_ = 0
+    total_bytes = 0
 
-def output_total() -> str: # what if it only does
-    """Outputs the total lines, words, and bytes of all the files searched"""
-    global total_lines
-    global total_words
-    global total_bytes_
-
+def output_results(input_lines: int, input_words: int, input_bytes: int, file: TextIO | None = None, is_total: bool = True):
     to_output = []
-    default = f"{total_lines} {total_words} {total_bytes_}"
-
+    
     if args.lines_only:
-        to_output.append(total_lines)
+        to_output.append(input_lines)
     if args.words_only:
-        to_output.append(total_words)
+        to_output.append(input_words)
     if args.bytes_only:
-        to_output.append(total_bytes_)
+        to_output.append(input_bytes)
 
     if not to_output:
-        to_output = default
+        to_output.append(f"{input_lines} {input_words} {input_bytes}")
 
-    to_output = "".join(map(str, to_output))
-    to_output += f" total"
-    sys_write(to_output)
+    if is_total:
+        to_output.append("total")
+    else:
+        to_output.append(f"{file.name.split('/')[-1]}")
 
-def output_results(file: TextIO, is_total: bool) -> None:
-    """Outputs the total lines, words, and bytes of a file"""
-    global lines
-    global words
-    global bytes_
-
-    to_output = []
-    default = f"{lines} {words} {bytes_}"
-
-    if args.lines_only:
-        to_output.append(lines)
-    if args.words_only:
-        to_output.append(words)
-    if args.bytes_only:
-        to_output.append(bytes_)
-
-    if not to_output:
-        to_output = default
-
-    to_output = "".join(map(str, to_output))
-    to_output += f" {file.name.split("/")[-1]}"
-
+    to_output = " ".join(map(str, to_output))
     sys_write(to_output)
 
 def count_line(line: str) -> int:
@@ -116,26 +90,25 @@ def count_bytes(line: str) -> int:
 
 def count_occurrences_in_file(file: TextIO) -> None:
     """Acquires the total number of occurrences of lines, word, and bytes"""
-    if len(args.file) > 1:
-        global total_lines
-        global total_words
-        global total_bytes_
-
     global lines
     global words
     global bytes_
 
-    for line in file:
+    for line in file: 
         lines += count_line(line)
         words += count_words(line)
         bytes_ += count_bytes(line)
 
-        if len(args.file) > 1:
-            total_lines += lines
-            total_words += words
-            total_bytes_ += bytes_
+    if len(args.file) > 1:
+        global total_lines
+        global total_words
+        global total_bytes 
+        
+        total_lines += lines
+        total_words += words
+        total_bytes += bytes_
 
-    output_results(file)
+    output_results(lines, words, bytes_, file, False)
 
 def look_for_file_matches() -> None:
     """Looks for file matches in the files directory"""
@@ -152,7 +125,7 @@ def look_for_file_matches() -> None:
                 count_occurrences_in_file(f)
 
     if len(args.file) > 1:
-        output_total()
+        output_results(total_lines, total_words, total_bytes)
 
 def file_not_exists() -> None:
     """If file does not exist, acquire from stdin"""
