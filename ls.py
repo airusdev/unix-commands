@@ -1,6 +1,8 @@
 import argparse
 
 def setup_argparse() -> None:
+    """Set up argparse variables"""
+    global args
     parser = argparse.ArgumentParser()
     
     # positional argument/s
@@ -8,6 +10,7 @@ def setup_argparse() -> None:
      
     # optional argument/s
 
+    args = parser.parse_args()
 
 def main() -> None:
     setup_argparse()
