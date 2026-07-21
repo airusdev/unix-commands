@@ -30,9 +30,10 @@ def setup_argparse() -> None:
 
 def file_detected(file: TextIO) -> None:
     """When file is detected, open file and output matches"""
-    count = 1
+    count = 0
     
     for line in file:
+        count += 1
         line = line.strip()
         pattern = args.pattern
         to_print = line
@@ -46,14 +47,13 @@ def file_detected(file: TextIO) -> None:
         
         if not args.invert_match and pattern in line:
             if args.count_of_matches:
-                count += 1
                 continue
             else:
                 sys_write(to_print)
-                count += 1
+
 
     if args.count_of_matches:
-        sys_write(str(count - 1))
+        sys_write(str(count))
 
 def file_and_pattern_detected() -> None:
     """Looks for matches in file name"""
