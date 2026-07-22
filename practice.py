@@ -1,11 +1,6 @@
+from pathlib import Path
 
-def count_words(string: str) -> int:
-    string = string.strip().split(" ")
-    word_count = len(string)
-    
-    return word_count
+my_dir = Path("./")
+for obj in my_dir.iterdir():
+    print(obj)
 
-
-string = " hello hii airus"
-count = count_words(string)
-print(count)

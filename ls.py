@@ -25,6 +25,15 @@ def setup_argparse() -> None:
 
     args = parser.parse_args()
 
+def search_dir(directory) -> None: # edit the type hint later
+    ordered_dir = sorted([item.name for item in directory.iterdir()], reverse=args.reverse_order)
+
+    for item in ordered_dir:
+        is_dotfile = item.split('.')[0] == ''
+
+        if args.show_hidden_files or not is_dotfile:
+            sys_write(item)
+
 def specified_dir() -> None:
     """Validates and searches the specified directory"""
     parent_dir = Path("./")
@@ -32,13 +41,8 @@ def specified_dir() -> None:
 
     if sub_dir.is_dir():
         sys_write(f'{sub_dir} exists\n')
-        ordered_dir = sorted([item.name for item in sub_dir.iterdir()], key=str.lower)
-        
-        for item in ordered_dir:
-            dotfile_check = item.split('.')[0] != ''
-            if dotfile_check:
-                sys_write(item)
-        
+        search_dir(sub_dir)
+
     else:
         sys_error(f"Sub Directory: {sub_dir} does not exist")
 
@@ -46,13 +50,7 @@ def specified_dir() -> None:
 def no_specified_dir() -> None:
     """Search the current directory"""
     directory = Path("./")
-    my_dir = sorted([item.name for item in directory.iterdir()], key=str.lower)
-
-    for item in my_dir:
-        dotfile_check = item.split('.')[0] != ""
-
-        if dotfile_check:
-            sys_write(item)
+    search_dir(directory)
 
 def dir_existence_check() -> None:
     """Checks for the directory input"""
