@@ -1,6 +1,7 @@
 import argparse
 import sys
 from pathlib import Path
+from tabulate import tabulate
 
 def sys_write(message: str):
     """Shortens sys.stdout.write() and automatically adds a newline"""
@@ -15,7 +16,7 @@ def setup_argparse() -> None:
     global args
     parser = argparse.ArgumentParser()
 
-    # positional argument/s
+    # positional argument/
     parser.add_argument("directory", help="a directory to search", nargs="?")
 
     # optional argument/s
@@ -44,8 +45,7 @@ def specified_dir() -> None:
         search_dir(sub_dir)
 
     else:
-        sys_error(f"Sub Directory: {sub_dir} does not exist")
-
+        sys_error(f"Sub Directory: {sub_dir} does not exist")   
 
 def no_specified_dir() -> None:
     """Search the current directory"""
