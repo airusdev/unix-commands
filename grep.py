@@ -31,13 +31,13 @@ def setup_argparse() -> None:
 def file_detected(file: TextIO) -> None:
     """When file is detected, open file and output matches"""
     count = 0
-    
+
     for line in file:
         count += 1
         line = line.strip()
         pattern = args.pattern
         to_print = line
-        
+
         if args.case_insensitive:
             pattern = args.pattern.lower()
             line = line.lower()
@@ -45,12 +45,11 @@ def file_detected(file: TextIO) -> None:
         if args.number_output_lines:
             to_print = f"{count} {line}"
         
-        if not args.invert_match and pattern in line:
+        if (args.invert_match) != (pattern in line):
             if args.count_of_matches:
                 continue
-            else:
-                sys_write(to_print)
 
+            sys_write(to_print)
 
     if args.count_of_matches:
         sys_write(str(count))
@@ -86,7 +85,7 @@ def file_not_detected() -> None:
         if args.number_output_lines:
             to_print = f"{count} {line}"
         
-        if not args.invert_match and pattern in line:
+        if (args.invert_match) and (not pattern in line):
             if args.count_of_matches:
                 count += 1
                 continue
