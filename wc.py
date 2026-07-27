@@ -142,6 +142,26 @@ def file_not_exists() -> None:
 
         sys_write(f"{lines} {words} {bytes_}")
 
+    to_output = []
+    
+    if args.lines_only:
+        to_output.append(input_lines)
+    if args.words_only:
+        to_output.append(input_words)
+    if args.bytes_only:
+        to_output.append(input_bytes)
+
+    if not to_output:
+        to_output.append(f"{input_lines} {input_words} {input_bytes}")
+
+    if is_total:
+        to_output.append("total")
+    else:
+        to_output.append(f"{file.name.split('/')[-1]}")
+
+    to_output = " ".join(map(str, to_output))
+    sys_write(to_output)
+
 def check_file_existence() -> None:
     """Validates if file from input exists"""
     if args.file:
