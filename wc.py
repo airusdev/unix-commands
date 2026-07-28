@@ -31,7 +31,7 @@ def setup_variables() -> None:
     global lines
     global words
     global bytes_
-
+    
     lines = 0
     words = 0
     bytes_ = 0
@@ -61,7 +61,7 @@ def output_results(input_lines: int, input_words: int, input_bytes: int, file: T
 
     if is_total:
         to_output.append("total")
-    else:
+    elif file:
         to_output.append(f"{file.name.split('/')[-1]}")
 
     to_output = " ".join(map(str, to_output))
@@ -112,12 +112,15 @@ def count_occurrences_in_file(file: TextIO) -> None:
 
 def look_for_file_matches() -> None:
     """Looks for file matches in the files directory"""
+    global is_error 
+    
     for file in args.file:
         formatted = file.split(".")[0]
-        found_matches = glob.glob(f"./sample_files/{formatted}.*")
+        found_matches = glob.glob(f"./{formatted}.*")
 
         if not found_matches:
             sys_error(f"[NO FILE FOUND] File: {file}")
+            is_error = True 
             continue
 
         for match in found_matches:
@@ -140,27 +143,8 @@ def file_not_exists() -> None:
         words += count_words(line)
         bytes_ += count_bytes(line)
 
-        sys_write(f"{lines} {words} {bytes_}")
+        output_results(lines, words, bytes_, False, False)
 
-    to_output = []
-    
-    if args.lines_only:
-        to_output.append(input_lines)
-    if args.words_only:
-        to_output.append(input_words)
-    if args.bytes_only:
-        to_output.append(input_bytes)
-
-    if not to_output:
-        to_output.append(f"{input_lines} {input_words} {input_bytes}")
-
-    if is_total:
-        to_output.append("total")
-    else:
-        to_output.append(f"{file.name.split('/')[-1]}")
-
-    to_output = " ".join(map(str, to_output))
-    sys_write(to_output)
 
 def check_file_existence() -> None:
     """Validates if file from input exists"""
@@ -178,9 +162,13 @@ def wc() -> None:
 
 
 def main() -> None:
+    global is_error 
+    is_error = False
+    
     setup_argparse()
     setup_variables()
     wc()
+    sys.exit(is_error)
 
 if __name__ == '__main__':
     main()

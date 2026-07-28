@@ -8,6 +8,7 @@ def sys_write(message: str) -> None:
     sys.stdout.write(message + "\n")
 
 def sys_error(message: str) -> None:
+    """Shortens sys.stderr.write and flushes with a newline"""
     sys.stderr.write(message + "\n")
 
 def setup_parser() -> None:
@@ -24,7 +25,7 @@ def setup_parser() -> None:
     args = parser.parse_args()
 
 def output_content(file: TextIO) -> str | None:
-    """Outputs the content based on the optional argument picked"""
+    """Outputs content given file input"""
     count = 1
 
     for line in file:
@@ -45,7 +46,7 @@ def output_content(file: TextIO) -> str | None:
             sys_write(line)
 
 def file_not_detected() -> None:
-    """When file is not inputted, acquire datafrom stdin instead"""
+    """When file is not inputted, acquire data from stdin instead"""
     sys_write("file not detected")
     sys_write("acquiring user input: \n")
 
@@ -54,13 +55,16 @@ def file_not_detected() -> None:
         sys_write("inputted: " + user_input)
 
 def file_detected() -> None:
-    "File/s are detected, output the data to the terminal"
+    """If files are inputted, look for file matches in the sample_files/ folder"""
+    global is_error 
+    
     for file in args.file:
         formatted = file.split(".")[0]
-        found_matches = glob.glob(f"./sample_files/{formatted}.*")
+        found_matches = glob.glob(f"./{formatted}.*")
 
         if not found_matches:
             sys_error(f"[ERROR DETECTED] File: '{file}' is not found" + "\n")
+            is_error = True
             continue
 
         for match in found_matches:
@@ -76,8 +80,12 @@ def cat() -> None:
 
 
 def main() -> None:
+    global is_error
+    is_error = False
+    
     setup_parser()
     cat()
+    sys.exit(is_error)
 
 
 if __name__ == "__main__":

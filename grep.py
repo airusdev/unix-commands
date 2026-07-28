@@ -56,12 +56,15 @@ def file_detected(file: TextIO) -> None:
 
 def file_and_pattern_detected() -> None:
     """Looks for matches in file name"""
+    global is_error
+    
     for file in args.file:
         formatted = file.split(".")[0]
-        found_matches = glob.glob(f"./sample_files/{formatted}.*")
+        found_matches = glob.glob(f"./{formatted}.*")
 
         if not found_matches:
             sys_error(f"[ERROR DETECTED] file: \"{file}\" does not exist")
+            is_error = True
             continue
 
         for match in found_matches:
@@ -85,7 +88,7 @@ def file_not_detected() -> None:
         if args.number_output_lines:
             to_print = f"{count} {line}"
         
-        if (args.invert_match) and (not pattern in line):
+        if (args.invert_match) != (pattern in line):
             if args.count_of_matches:
                 count += 1
                 continue
@@ -98,15 +101,16 @@ def file_not_detected() -> None:
 
 def validate_pattern_file_existence() -> None:
     """Validate if pattern and file exists from user input"""
+    global is_error
     if args.pattern and args.file:
         file_and_pattern_detected()
     else:
         if not args.pattern:
             sys_error("[ERROR DETECTED] No pattern inputted")
+            is_error = True
             return
         
         if not args.file:
-            sys_error("[ERROR DETECTED] No file inputted")
             file_not_detected()
             
 def grep() -> None:
@@ -115,8 +119,12 @@ def grep() -> None:
 
 
 def main() -> None:
+    global is_error
+    is_error = False
     setup_argparse()
     grep()
+
+    sys.exit(is_error)
 
 if __name__ == "__main__":
     main()
